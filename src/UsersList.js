@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './UsersList.css'
 
 const UsersList = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    usertype: ''
-  })};
+    usertype: 'Admin'
+  });
 
   const [users, setUsers] = useState([]);
   const [filterList, setFilterList] = useState([]);
@@ -19,25 +19,28 @@ const UsersList = () => {
       return { ...prevDataForm, [name]: target.value }
     })
   }
-  const filtering = () => {
-    
+  const filtering = (e) => {
+    let btnTargetName=e.target.name
+
     let filter
 
     if (btnTargetName === 'users') {
 
       filter = users.filter((user) => {
-        return (user.usertype === 'admin')
+        return (user.usertype === 'User')
       })
     }
-   if (btnTargetName === 'admin') {
+   if (btnTargetName === 'admins') {
 
       filter = users.filter((user) => {
-        return (user.usertype === 'ad in')
+        return (user.usertype === 'Admin')
       })
     }
     if  (btnTargetName === 'all') {
+      filter = users
    
     }
+    setFilterList(filter)
   }
 
   
@@ -51,7 +54,14 @@ const UsersList = () => {
     const filteredUsers = users.filter(user => user.id !== id);
     setUsers(filteredUsers)
   }
+useEffect(()=> {
+  setFilterList(users)
 
+}, [users])
+
+useEffect(()=>{
+  alert("wykonałem się tylko raz po załadowaniu aplikacji")
+},[])
   // console.log(users);
 
   return (
@@ -80,35 +90,35 @@ const UsersList = () => {
           id="usertype"
           name="usertype"
           onChange={handleInputChange}>
-          <option value="Admin">Ad in</option>
-          <option value="User">Admin</option>
+          <option value="Admin">Admin</option>
+          <option value="User">User</option>
         </select>
         <button>Save</button>
       </form>
 
       <div className='buttons'>
-        <button name='users' onClick={filtering}>Wyświetl userów</button>
-        <button name='admins' onClick={filtering}>Wyświetl adminów</button>
-        <button name='all' onClick={filtering}>Wyświetl wszystkich</button>
+        <button name='users' onClick={(e)=> filtering(e)}>Wyświetl userów</button>
+        <button name='admins' onClick={(e)=> filtering(e)}>Wyświetl adminów</button>
+        <button name='all' onClick={(e)=> filtering(e)}>Wyświetl wszystkich</button>
 
       </div>
 
 
       <div className='list'>
 
-        {users.map((user) => {
+        {filterList.map((user) => {
           return (
             <div className='userItem' key={user.id} onClick={() => removeUser(user.id)}>
               <p>{user.username}</p>
               <p>{user.email}</p>
-              <p>{user.userType}</p>
+              <p>{user.usertype}</p>
             </div>
           );
         })}
       </div>
     </div>
   );
-
+      }
 
 
   export default UsersList
